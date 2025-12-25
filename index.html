@@ -127,10 +127,10 @@
         /* --- KHU VỰC NÚT BẤM VÀ QR CODE --- */
         .action-wrapper {
             margin-top: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+            display: flex; /* Xếp ngang */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            gap: 15px; /* Khoảng cách giữa nút và QR */
         }
 
         #btn-secret {
@@ -150,6 +150,7 @@
         }
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
+        /* Sửa đổi style QR thành thẻ a */
         a.qr-frame {
             width: 130px; height: 130px; 
             background: rgba(255, 255, 255, 0.9);
@@ -160,7 +161,7 @@
             display: flex; justify-content: center; align-items: center;
             cursor: pointer;
             transition: transform 0.3s;
-            text-decoration: none;
+            text-decoration: none; /* Bỏ gạch chân nếu có */
         }
         a.qr-frame:hover { transform: scale(1.1); } 
         a.qr-frame img { width: 100%; height: 100%; object-fit: contain; border-radius: 5px; }
@@ -192,13 +193,9 @@
             border-radius: 10px;
             background: #000;
         }
-        
-        /* ĐÃ SỬA: Dùng iframe thay cho video */
         .video-wrapper iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
         }
-        
         .close-video {
             position: absolute; top: -15px; right: -15px;
             width: 35px; height: 35px; background: var(--red); color: white;
@@ -241,7 +238,7 @@
         <div class="action-wrapper">
             <button id="btn-secret">⚠️ Tư liệu mật</button>
             
-            <a href="https://www.facebook.com/" class="qr-frame" target="_blank">
+            <a href="https://merry-christmas-to-v-n-weird.vercel.app/" class="qr-frame" target="_blank">
                 <img src="qr.png" alt="QR Code"> 
             </a>
         </div>
@@ -258,21 +255,21 @@
     <div id="video-modal" class="hidden">
         <div class="video-frame">
             <div class="close-video" onclick="closeVideo()">✕</div>
-            
             <div class="video-wrapper">
-                <iframe 
-                    id="secret-iframe" 
-                    src="https://drive.google.com/file/d/1DtuTvZCXAi-93-g0ZjJFsmobpdbVZz9z/preview" 
-                    width="100%" 
-                    height="100%" 
-                    frameborder="0" 
-                    allow="autoplay; fullscreen">
-                </iframe>
+                <iframe id="secret-video" src="" allow="autoplay"></iframe>
             </div>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // CẤU HÌNH ID VIDEO GOOGLE DRIVE TẠI ĐÂY
+        // ==========================================
+        const DRIVE_VIDEO_ID = "1DtuTvZCxAi-93-g0ZjJFsmobpdbVZz9z"; 
+        
+        // Tự động tạo link preview (không cần sửa dòng dưới)
+        const DRIVE_VIDEO_URL = `https://drive.google.com/file/d/1DtuTvZCxAi-93-g0ZjJFsmobpdbVZz9z/view?usp=drive_link/${DRIVE_VIDEO_ID}/preview`;
+        
         /* --- 1. HIỆU ỨNG TUYẾT RƠI --- */
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
@@ -306,7 +303,7 @@
         /* --- 2. LOGIC NÚT CHẠY TRỐN VÀ NHẠC NỀN --- */
         const btnNo = document.getElementById('btn-no');
         const btnYes = document.getElementById('btn-yes');
-        const bgMusic = document.getElementById('bg-music'); 
+        const bgMusic = document.getElementById('bg-music'); // Lấy element nhạc
         let isRunning = false;
 
         function moveBtn(e) {
@@ -324,6 +321,7 @@
         btnNo.addEventListener('mouseenter', moveBtn);
 
         btnYes.addEventListener('click', () => {
+            // Bật nhạc khi bấm Có
             bgMusic.play().catch(e => console.log("Cần tương tác để phát nhạc"));
             
             const intro = document.getElementById('intro-modal');
@@ -402,32 +400,25 @@
             }
         }
 
-        /* --- 4. LOGIC VIDEO MẬT & TẮT/BẬT NHẠC (ĐÃ SỬA CHO DRIVE) --- */
+        /* --- 4. LOGIC VIDEO MẬT & TẮT/BẬT NHẠC --- */
         const btnSecret = document.getElementById('btn-secret');
         const videoModal = document.getElementById('video-modal');
-        const iframeElement = document.getElementById('secret-iframe');
-        
-        // Link video gốc của bạn
-        const videoSrc = "https://drive.google.com/file/d/1DtuTvZCXAi-93-g0ZjJFsmobpdbVZz9z/preview";
+        const videoIframe = document.getElementById('secret-video');
 
         btnSecret.addEventListener('click', () => {
             videoModal.classList.remove('hidden');
+            videoIframe.src = DRIVE_VIDEO_URL; 
             
-            // Tắt nhạc nền
+            // TẮT NHẠC NỀN KHI MỞ VIDEO
             bgMusic.pause();
-            
-            // Gán link để video load lại
-            if(iframeElement) iframeElement.src = videoSrc;
         });
 
         function closeVideo() {
             videoModal.classList.add('hidden');
+            videoIframe.src = "";
             
-            // Tắt video bằng cách xóa src
-            if(iframeElement) iframeElement.src = ""; 
-            
-            // Bật lại nhạc nền
-            bgMusic.play().catch(e => console.log("Music error"));
+            // BẬT LẠI NHẠC NỀN KHI ĐÓNG VIDEO
+            bgMusic.play();
         }
     </script>
 </body>
