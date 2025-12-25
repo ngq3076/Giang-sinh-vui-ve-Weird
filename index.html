@@ -127,10 +127,10 @@
         /* --- KHU VỰC NÚT BẤM VÀ QR CODE --- */
         .action-wrapper {
             margin-top: 30px;
-            display: flex; /* Xếp ngang */
-            align-items: center; /* Căn giữa theo chiều dọc */
-            justify-content: center; /* Căn giữa theo chiều ngang */
-            gap: 15px; /* Khoảng cách giữa nút và QR */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
         #btn-secret {
@@ -150,7 +150,6 @@
         }
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Sửa đổi style QR thành thẻ a */
         a.qr-frame {
             width: 130px; height: 130px; 
             background: rgba(255, 255, 255, 0.9);
@@ -161,7 +160,7 @@
             display: flex; justify-content: center; align-items: center;
             cursor: pointer;
             transition: transform 0.3s;
-            text-decoration: none; /* Bỏ gạch chân nếu có */
+            text-decoration: none;
         }
         a.qr-frame:hover { transform: scale(1.1); } 
         a.qr-frame img { width: 100%; height: 100%; object-fit: contain; border-radius: 5px; }
@@ -193,11 +192,13 @@
             border-radius: 10px;
             background: #000;
         }
-        /* Đã sửa từ iframe sang video */
-        .video-wrapper video {
+        
+        /* ĐÃ SỬA: Dùng iframe thay cho video */
+        .video-wrapper iframe {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            outline: none;
+            border: none;
         }
+        
         .close-video {
             position: absolute; top: -15px; right: -15px;
             width: 35px; height: 35px; background: var(--red); color: white;
@@ -258,10 +259,14 @@
         <div class="video-frame">
             <div class="close-video" onclick="closeVideo()">✕</div>
             <div class="video-wrapper">
-                <video id="secret-video" controls playsinline>
-                    <source src="vid.mp4" type="video/mp4">
-                    Trình duyệt của bạn không hỗ trợ video.
-                </video>
+                <iframe 
+                    id="secret-iframe" 
+                    src="https://drive.google.com/file/d/1DtuTvZCXAi-93-g0ZjJFsmobpdbVZz9z/preview" 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    allow="autoplay; fullscreen">
+                </iframe>
             </div>
         </div>
     </div>
@@ -300,7 +305,7 @@
         /* --- 2. LOGIC NÚT CHẠY TRỐN VÀ NHẠC NỀN --- */
         const btnNo = document.getElementById('btn-no');
         const btnYes = document.getElementById('btn-yes');
-        const bgMusic = document.getElementById('bg-music'); // Lấy element nhạc
+        const bgMusic = document.getElementById('bg-music'); 
         let isRunning = false;
 
         function moveBtn(e) {
@@ -318,7 +323,6 @@
         btnNo.addEventListener('mouseenter', moveBtn);
 
         btnYes.addEventListener('click', () => {
-            // Bật nhạc khi bấm Có
             bgMusic.play().catch(e => console.log("Cần tương tác để phát nhạc"));
             
             const intro = document.getElementById('intro-modal');
@@ -397,10 +401,13 @@
             }
         }
 
-        /* --- 4. LOGIC VIDEO MẬT & TẮT/BẬT NHẠC --- */
+        /* --- 4. LOGIC VIDEO MẬT & TẮT/BẬT NHẠC (ĐÃ SỬA CHO DRIVE) --- */
         const btnSecret = document.getElementById('btn-secret');
         const videoModal = document.getElementById('video-modal');
-        const videoElement = document.getElementById('secret-video');
+        const iframeElement = document.getElementById('secret-iframe');
+        
+        // Link video gốc của bạn
+        const videoSrc = "https://drive.google.com/file/d/1DtuTvZCXAi-93-g0ZjJFsmobpdbVZz9z/preview";
 
         btnSecret.addEventListener('click', () => {
             videoModal.classList.remove('hidden');
@@ -408,19 +415,18 @@
             // Tắt nhạc nền
             bgMusic.pause();
             
-            // Tự động chạy video từ đầu
-            videoElement.currentTime = 0;
-            videoElement.play();
+            // Gán link để video load lại
+            if(iframeElement) iframeElement.src = videoSrc;
         });
 
         function closeVideo() {
             videoModal.classList.add('hidden');
             
-            // Dừng video
-            videoElement.pause();
+            // Tắt video bằng cách xóa src
+            if(iframeElement) iframeElement.src = ""; 
             
             // Bật lại nhạc nền
-            bgMusic.play();
+            bgMusic.play().catch(e => console.log("Music error"));
         }
     </script>
 </body>
